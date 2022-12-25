@@ -1,0 +1,64 @@
+- all the fields need to have type defs
+================================================
+- the Query type represents the root query of the GraphQL API. It defines the fields that can be queried at the root level of the API.
+A root-level query is a query that is made at the top level of the API, rather than being nested within another field. For example, consider the following query:
+query {
+  books {
+    title
+  }
+}
+In this schema, the Query type has two fields: books and users. These fields can be queried at the root level of the API, like this:
+query {
+  books {
+    title
+  }
+  users {
+    name
+  }
+}
+The Book and User types, on the other hand, define fields that can only be queried within the context of a Book or User object. For example, you can query the title field of a Book object like this:
+query {
+  books {
+    title
+  }
+}
+But you cannot query the title field at the root level of the API, because it is not a field on the Query type.
+
+================================================
+
+- how can we query something even if it does not have a resolver: No we can't, here's why we can do it even though we can't
+
+If you are able to query the name field of the User type without including a resolver function for it in your resolvers object, it is likely because the data for the name field is being provided by some other means.
+
+One possibility is that the data for the name field is being hardcoded into the User objects in the UserList array, like this:
+const UserList = [
+  {
+    id: "1",
+    name: "John Smith",
+    username: "johnsmith",
+    age: 30
+  },
+  {
+    id: "2",
+    name: "Jane Doe",
+    username: "janedoe",
+    age: 25
+  }
+];
+
+==========================
+
+- query is used like 'get' request but mutation is used to mutate data, ie 'post put or delete'
+============================
+
+-react props confusion clear
+<DisplayUsers props={data} />
+      
+function DisplayUsers(recieved) {
+
+	// recieved me ek object hoga jisme props hai aur props me data hai
+	// recieved = {props : data:{}}
+	
+	// so, received.props.data.users
+
+}
