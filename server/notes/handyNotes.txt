@@ -1,0 +1,135 @@
+- graphql can exist as => a backend service itself or => a layer between your frontend and backend so, there exists your services like rest api and stuff and graphql makes requests to rest api
+==================================
+
+- typedef
+a db type of thing where we define all fields and different type of data we want 
+we also want to detemine which type of queries we want to allow to make to that db, so that queries also come in typedef
+mutations also come in typedef, which allow us to update, add or delete data
+
+- inside typedef
+we can think like we are making a db for graphql here
+we can create 'tables' to say, by using =>  type User {} and wrinting what 'cols' we want in {} like this: name: String!
+we want special 'tables' inside this which are pre-defined by graphql, namely
+type Query {}, type Mutation {} 
+inside Query we write what queries the client can execute to fetch the data we defined in graphql
+eg: type Query {getAllUsers: [User!]!, getSingleUser(id: ID!): User!}
+now what should happen when someone runs query 'getAllUsers' is what we write in 'resolvers'
+ 
+ - more about type Query {} : https://graphql.org/learn/execution
+ At the top level of every GraphQL server is a type that represents all of the possible entry points into the GraphQL API, it's often called the Root type or the Query type.
+
+
+==================================
+-resolvers
+functions that are called when we make requests to that queries or mutations in typedefs
+these functions have 4 args: parent, args, context, info(not imp for beginners) => order is imp
+----------------------------------------------------------------------
+=> args: what we sent while querying is accessible in resolver as args
+----------------------------------------------------------------------
+=> context: we have access to this accross all resolver and it is created 
+details: 
+In a GraphQL resolver, the context argument is an object that contains contextual information about the current GraphQL request. It can be used to pass information that should be available to all resolvers, such as authentication credentials or the currently logged-in user.
+
+The context object is created by the GraphQL server and is made available to all resolvers. It is created when the GraphQL server receives a request and is passed to each resolver that is called as part of the request.
+
+The exact contents of the context object will depend on the needs of your application. You can include any information in the context object that you want to make available to all resolvers.
+
+For example, you might include an instance of a database client in the context object so that resolvers can make database queries, or you might include the currently logged-in user in the context object so that resolvers can check the permissions of the user.
+
+Here is an example of how you might create and pass the context object to the GraphQL server:
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }) => {
+    // get the user token from the headers
+    const token = req.headers.authorization || '';
+
+    // try to retrieve a user with the token
+    const user = getUser(token);
+
+    // add the user to the context
+    return { user };
+  },
+});
+In this example, the context function is passed the request object and extracts the user token from the headers. It then tries to retrieve a user object using the token and adds the user to the context object.
+
+The context object is then passed to all resolvers that are called as part of the request, and they can use the context object to access the user object.
+
+It's important to note that the context object is created for each individual request, so it is not shared between requests. This means that the context object is created anew every time a request is made to the GraphQL server.
+
+It is important to note that the ApolloServer instance object is not recreated for each request. Instead, it is created when the server starts up and remains in memory for the lifetime of the server.
+----------------------------------------------------------------------
+=> parent : for nice eg watch https://www.youtube.com/watch?v=pI5CKxyrbiI&t=629s
+ parent argument refers to the parent object that the resolver is being called on.
+
+For example, consider the following GraphQL schema:
+ 
+type User {
+  id: ID!
+  name: String!
+  favoriteMovie: Movie
+}
+
+type Movie {
+  id: ID!
+  name: String!
+}
+
+If you have a resolver for the favoriteMovie field of the User type, the parent argument will be the User object that the resolver is being called on.
+
+For example:
+ 
+User: {
+  favoriteMovie: (parent, args, context, info) => {
+    // `parent` is the User object that the resolver is being called on
+    const movieId = parent.favoriteMovieId;
+    return getMovieById(movieId);
+  },
+},
+In this case, the parent argument allows you to access the properties of the User object that the resolver is being called on, such as the favoriteMovieId field.
+
+The parent argument is the first argument passed to a GraphQL resolver function, followed by the args, context, and info arguments. The args argument contains the arguments passed to the field in the GraphQL query, the context argument contains the context of the request, and the info argument contains information about the execution of the current operation.
+
+the parent object is the User object returned by the preceding resolver in the GraphQL query.
+
+For example, consider the following GraphQL query:
+
+Copy code
+query {
+  user(id: 1) {
+    name
+    favoriteMovie {
+      name
+    }
+  }
+}
+If you have a resolver for the user field of the Query type that returns a User object, and a resolver for the favoriteMovie field of the User type, the parent object in the favoriteMovie resolver will be the User object returned by the user resolver.
+
+For example:
+ 
+const resolvers = {
+  Query: {
+    user: (parent, args, context, info) => {
+      // retrieve the user with the specified ID
+      const user = getUserById(args.id);
+      return user;
+    },
+  },
+  User: {
+    favoriteMovie: (parent, args, context, info) => {
+      const movieId = parent.favoriteMovieId;
+      return getMovieById(movieId);
+    },
+  },
+};
+In this case, the parent object in the favoriteMovie resolver would be the User object returned by the user resolver, which might look something like this:
+ 
+{
+  id: 1,
+  name: 'John',
+  favoriteMovieId: 10,
+}
+The parent object is passed as the first argument to the resolver function, and it contains all of the fields that were requested in the GraphQL query, as well as any additional fields that were included in the response by the resolvers.
+==================================
+
