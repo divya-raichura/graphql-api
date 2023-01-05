@@ -1,4 +1,5 @@
 import { useQuery, gql } from "@apollo/client";
+import MovieDetails from "./MovieDetails";
 
 const ALL_MOVIES = gql`
   query QueryAllMovies {
@@ -34,6 +35,11 @@ function DisplayMovies() {
           <Movie key={item.id} {...item} />
         ))}
       </ul>
+      <hr />
+      <div>
+        <h1>Get Movie Details</h1>
+        <MovieDetails />
+      </div>
     </div>
   );
 }

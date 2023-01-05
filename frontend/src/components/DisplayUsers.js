@@ -1,12 +1,14 @@
 import { useQuery, gql } from "@apollo/client";
+import CreateUser from "./CreateUser";
 
-const ALL_USERS = gql`
+export const ALL_USERS = gql`
   query QueryAllUsers {
     users {
       id
       name
       age
       username
+      nationality
     }
     # if we include below query as well, then data obj will be as follows when data is recieved= data: {users : Array, movies: Array} We can access these as data.users.map or data.movies.map functions
     # movies {
@@ -42,11 +44,16 @@ function DisplayUsers() {
           <User key={item.id} {...item} />
         ))}
       </ul>
+
+      <hr />
+
+      <h1>Create a new user</h1>
+      <CreateUser />
     </div>
   );
 }
 
-function User({ id, name, age, username }) {
+function User({ id, name, age, username, nationality }) {
   return (
     <li>
       <ul>
@@ -54,6 +61,7 @@ function User({ id, name, age, username }) {
         <li>name: {name}</li>
         <li>age: {age}</li>
         <li>username: {username}</li>
+        <li>nationality: {nationality}</li>
       </ul>
     </li>
   );

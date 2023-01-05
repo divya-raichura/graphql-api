@@ -7,8 +7,7 @@ export const typeDefs = `#graphql
     age: Int!
     nationality: Nationality!
     friends: [User]
-    favoriteMovies: [Movie] # in gql, it's a good practice that when something is not of primitive type, we should create resolver 
-    # of the type we are including it in
+    favoriteMovies: [Movie]
   }
 
   type Movie {

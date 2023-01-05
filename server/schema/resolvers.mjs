@@ -23,7 +23,7 @@ export const resolvers = {
 
   User: {
     // if this was in db then there  was no need to do write resolver
-    favoriteMovies: () => {
+    favoriteMovies: (parent) => {
       return MovieList.filter(
         (movie) =>
           movie.yearOfPublication >= 2000 && movie.yearOfPublication <= 2010
@@ -36,7 +36,8 @@ export const resolvers = {
     createUser: (parent, args) => {
       const user = args.input;
       const lastId = UserList[UserList.length - 1].id;
-      user.id = lastId + 1;
+      const idOfNewUser = Number(lastId) + 1;
+      user.id = `${idOfNewUser}`;
       UserList.push(user);
       return user;
     },
